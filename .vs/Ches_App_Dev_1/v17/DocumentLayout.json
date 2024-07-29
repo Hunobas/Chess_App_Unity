@@ -1,0 +1,90 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\po127\\chess_toon\\Ches_App_Dev_1\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{6534AE1D-D291-61ED-56CA-2820B4B60BE6}|Assembly-CSharp.csproj|c:\\users\\po127\\chess_toon\\ches_app_dev_1\\assets\\scripts\\promotion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6534AE1D-D291-61ED-56CA-2820B4B60BE6}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\promotion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6534AE1D-D291-61ED-56CA-2820B4B60BE6}|Assembly-CSharp.csproj|c:\\users\\po127\\chess_toon\\ches_app_dev_1\\assets\\scripts\\chessman.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6534AE1D-D291-61ED-56CA-2820B4B60BE6}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\chessman.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6534AE1D-D291-61ED-56CA-2820B4B60BE6}|Assembly-CSharp.csproj|C:\\Users\\po127\\chess_toon\\Ches_App_Dev_1\\assets\\scripts\\moveplate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6534AE1D-D291-61ED-56CA-2820B4B60BE6}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\moveplate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6534AE1D-D291-61ED-56CA-2820B4B60BE6}|Assembly-CSharp.csproj|C:\\Users\\po127\\chess_toon\\Ches_App_Dev_1\\assets\\scripts\\game.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6534AE1D-D291-61ED-56CA-2820B4B60BE6}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\game.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Game.cs",
+              "DocumentMoniker": "C:\\Users\\po127\\chess_toon\\Ches_App_Dev_1\\Assets\\Scripts\\Game.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Game.cs",
+              "ToolTip": "C:\\Users\\po127\\chess_toon\\Ches_App_Dev_1\\Assets\\Scripts\\Game.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Game.cs",
+              "ViewState": "AQIAAHoAAAAAAAAAAAAQwJYAAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-21T12:10:35.188Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MovePlate.cs",
+              "DocumentMoniker": "C:\\Users\\po127\\chess_toon\\Ches_App_Dev_1\\Assets\\Scripts\\MovePlate.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\MovePlate.cs",
+              "ToolTip": "C:\\Users\\po127\\chess_toon\\Ches_App_Dev_1\\Assets\\Scripts\\MovePlate.cs",
+              "RelativeToolTip": "Assets\\Scripts\\MovePlate.cs",
+              "ViewState": "AQIAAIMAAAAAAAAAAAAUwKAAAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-22T08:21:57.49Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Promotion.cs",
+              "DocumentMoniker": "C:\\Users\\po127\\chess_toon\\Ches_App_Dev_1\\Assets\\Scripts\\Promotion.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Promotion.cs",
+              "ToolTip": "C:\\Users\\po127\\chess_toon\\Ches_App_Dev_1\\Assets\\Scripts\\Promotion.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Promotion.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACoAAAAFAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-28T09:24:47.539Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Chessman.cs",
+              "DocumentMoniker": "C:\\Users\\po127\\chess_toon\\Ches_App_Dev_1\\Assets\\Scripts\\Chessman.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Chessman.cs",
+              "ToolTip": "C:\\Users\\po127\\chess_toon\\Ches_App_Dev_1\\Assets\\Scripts\\Chessman.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Chessman.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABcBAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-22T07:06:54.799Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
