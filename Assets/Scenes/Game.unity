@@ -488,9 +488,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 604aaf2c69c877c49b3858c652e7cf94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chessPiecePrefab: {fileID: 6552449999334078912, guid: 63b8efee383372a4aa6c6e047666a0bc, type: 3}
-  lastMovedPawn: {fileID: 0}
-  lastMovedPawnInitialY: 0
+  ChessPiecePrefab: {fileID: 6552449999334078912, guid: 63b8efee383372a4aa6c6e047666a0bc, type: 3}
 --- !u!1 &1119503169
 GameObject:
   m_ObjectHideFlags: 0

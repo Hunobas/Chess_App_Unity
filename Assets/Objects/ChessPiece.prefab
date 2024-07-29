@@ -98,20 +98,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d2fd8a7174569d4180d2df578f0a06e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 0}
-  movePlatePrefab: {fileID: 8863831858477697798, guid: 1016045a99f923c48b6d87e92133244b, type: 3}
-  black_queen: {fileID: 21300000, guid: aea016bd30a13d54a81891b4b19c9985, type: 3}
-  black_knight: {fileID: 21300000, guid: 9001ef1b6724948498f954a7d3053933, type: 3}
-  black_bishop: {fileID: 21300000, guid: 3cdcbe357f2acbd4d940f51070b6ffc4, type: 3}
-  black_king: {fileID: 21300000, guid: 5e9348a9aeeaf9b4fba234548f0b29a4, type: 3}
-  black_rook: {fileID: 21300000, guid: bb13a79db637f07409f110434865c043, type: 3}
-  black_pawn: {fileID: 21300000, guid: 50449dd6d6e65ac40a7bc22aac7e4fc6, type: 3}
-  white_queen: {fileID: 21300000, guid: 704e5adc2a9dcf04e8714a10c60340d6, type: 3}
-  white_knight: {fileID: 21300000, guid: eeb3f3210d6aa8245bff390cd107c9bd, type: 3}
-  white_bishop: {fileID: 21300000, guid: f55fadb51410efd499985a15f45cfd5d, type: 3}
-  white_king: {fileID: 21300000, guid: 93340bafa868f2145818ff02481156f0, type: 3}
-  white_rook: {fileID: 21300000, guid: d99031ee5ede36746aa38955c7507c74, type: 3}
-  white_pawn: {fileID: 21300000, guid: 6f3b6786d1e7f984782fbb2d0cfab97e, type: 3}
+  MovePlatePrefab: {fileID: 8863831858477697798, guid: 1016045a99f923c48b6d87e92133244b, type: 3}
+  BlackQueen: {fileID: 21300000, guid: aea016bd30a13d54a81891b4b19c9985, type: 3}
+  BlackKnight: {fileID: 21300000, guid: 9001ef1b6724948498f954a7d3053933, type: 3}
+  BlackBishop: {fileID: 21300000, guid: 3cdcbe357f2acbd4d940f51070b6ffc4, type: 3}
+  BlackKing: {fileID: 21300000, guid: 5e9348a9aeeaf9b4fba234548f0b29a4, type: 3}
+  BlackRook: {fileID: 21300000, guid: bb13a79db637f07409f110434865c043, type: 3}
+  BlackPawn: {fileID: 21300000, guid: 50449dd6d6e65ac40a7bc22aac7e4fc6, type: 3}
+  WhiteQueen: {fileID: 21300000, guid: 704e5adc2a9dcf04e8714a10c60340d6, type: 3}
+  WhiteKnight: {fileID: 21300000, guid: eeb3f3210d6aa8245bff390cd107c9bd, type: 3}
+  WhiteBishop: {fileID: 21300000, guid: f55fadb51410efd499985a15f45cfd5d, type: 3}
+  WhiteKing: {fileID: 21300000, guid: 93340bafa868f2145818ff02481156f0, type: 3}
+  WhiteRook: {fileID: 21300000, guid: d99031ee5ede36746aa38955c7507c74, type: 3}
+  WhitePawn: {fileID: 21300000, guid: 6f3b6786d1e7f984782fbb2d0cfab97e, type: 3}
 --- !u!61 &-2586208512438422135
 BoxCollider2D:
   m_ObjectHideFlags: 0

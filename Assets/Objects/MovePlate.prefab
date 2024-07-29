@@ -98,11 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76c9b30e5a7444a46a02b3f1b07ea9f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 0}
-  promotionPlatePrefab: {fileID: 5717892943234744928, guid: 16aa600ff6d56f24a832e8bfc4a4eb58, type: 3}
-  isAttack: 0
-  isCastling: 0
-  isEnPassant: 0
+  PromotionPlatePrefab: {fileID: 1185407974408403054, guid: 16aa600ff6d56f24a832e8bfc4a4eb58, type: 3}
 --- !u!61 &3728030088462059062
 BoxCollider2D:
   m_ObjectHideFlags: 0
