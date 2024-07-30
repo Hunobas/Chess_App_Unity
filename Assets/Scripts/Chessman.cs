@@ -257,7 +257,8 @@ public class Chessman : MonoBehaviour
 
     private void OnMouseUp()
     {
-        if (!Game.Instance.IsGameOver() && Game.Instance.GetCurrentPlayer() == player)
+        Game game = Game.Instance;
+        if (!game.IsGameOver() && game.GetCurrentPlayer() == player && game.GetPromotionComplete())
         {
             DestroyMovePlates();
             InitiateMovePlates();
