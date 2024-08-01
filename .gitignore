@@ -37,7 +37,25 @@ crashlytics-build.properties
 # Unity cache directory
 /[Ll]ibrary/
 
+# Unity Builds directory
+/[Bb]uilds/
+
 # Unity Burst compiler related files
 /[Aa]ssets/Plugins/x86_64/libburst-llvm-*.dylib
 /[Aa]ssets/Plugins/x86_64/libburst-llvm-*.so
 /[Ll]ibrary/PackageCache/com.unity.burst@*/**
+
+# Photon
+/[Aa]ssets/Photon/
+!/[Aa]ssets/Photon/PhotonUnityNetworking/Resources/
+
+# Firebase
+/[Aa]ssets/Firebase/
+/[Aa]ssets/Editor Default Resources/Firebase/
+/[Aa]ssets/ExternalDependencyManager/
+/[Aa]ssets/GeneratedLocalRepo/
+/[Aa]ssets/Parse/
+/[Aa]ssets/Plugins/iOS/Firebase/
+
+# Keep specific scripts
+!/[Aa]ssets/Scripts/
