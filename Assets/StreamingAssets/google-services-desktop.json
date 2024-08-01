@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "175363484721",
+    "project_id": "unity-chesstoon-backend",
+    "storage_bucket": "unity-chesstoon-backend.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:175363484721:android:7186173c5b76d7a2bcb910",
+        "android_client_info": {
+          "package_name": "com.Hunobas.CHESSTOON"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKva1RJ9bfGcrhUpKRINPtuTZoA4OsIoE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

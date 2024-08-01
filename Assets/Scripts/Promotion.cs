@@ -1,10 +1,12 @@
 // Promotion.cs:
 using UnityEngine;
 using System.Collections;
+using Photon.Pun;
 
-public class Promotion : MonoBehaviour
+public class Promotion : MonoBehaviourPunCallbacks
 {
     public GameObject PromotionPiece { get; private set; }
+    private PhotonView photonView;
 
     public Sprite BlackQueen, BlackKnight, BlackBishop, BlackRook;
     public Sprite WhiteQueen, WhiteKnight, WhiteBishop, WhiteRook;
@@ -43,13 +45,27 @@ public class Promotion : MonoBehaviour
     public void SetPromotionPiece(GameObject piece)
     {
         PromotionPiece = piece;
+        photonView = piece.GetComponent<PhotonView>();
     }
 
     private void OnMouseUp()
     {
-        PromotionPiece.name = name;
+        if (!photonView.IsMine) return;
+
+        photonView.RPC("PerformPromotion", RpcTarget.All, name);
+    }
+
+    [PunRPC]
+    private void PerformPromotion(string newPieceName)
+    {
+        PromotionPiece.name = newPieceName;
         PromotionPiece.GetComponent<SpriteRenderer>().sprite = GetComponent<SpriteRenderer>().sprite;
-        Game.Instance.SetPromotionComplete(true);
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Game.Instance.IsPromotionComplete = true;
+        }
+
         StartCoroutine(DestroyParentNextFrame());
     }
 

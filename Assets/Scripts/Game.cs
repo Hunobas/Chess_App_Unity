@@ -1,28 +1,50 @@
 // Game.cs:
+using System.Collections;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
 using System;
+using Photon.Pun;
 
 public enum PlayerColor { White, Black }
 public enum ChessPieceType { Pawn, Rook, Knight, Bishop, Queen, King }
 
-public class Game : MonoBehaviour
+public class Game : MonoBehaviourPunCallbacks
 {
     public static Game Instance { get; private set; }
+
+    public bool IsMasterClientLocal => PhotonNetwork.IsMasterClient && photonView.IsMine;
 
     public GameObject ChessPiecePrefab;
     public GameObject LastMovedPawn { get; private set; }
     public int LastMovedPawnInitialY { get; private set; }
+    public PlayerColor LocalPlayerColor { get; private set; }
 
+    private bool _isPromotionComplete = true;
+    public bool IsPromotionComplete
+    {
+        get => _isPromotionComplete;
+        set
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                photonView.RPC("SetPromotionCompleteRPC", RpcTarget.All, value);
+            }
+        }
+    }
     private const int BoardSize = 8;
     private GameObject[,] positions = new GameObject[BoardSize, BoardSize];
     private GameObject[] playerBlack = new GameObject[16];
     private GameObject[] playerWhite = new GameObject[16];
+    private int[] playerScores;
 
     private PlayerColor currentPlayer = PlayerColor.White;
     private bool isGameOver = false;
-    private bool isPromotionComplete = true;
+
+    private TextMeshProUGUI waitingText;
+    private TextMeshProUGUI winnerText;
+    private TextMeshProUGUI restartText;
+    private GameObject[] menuObjects;
 
     public event Action<PlayerColor> OnTurnChanged;
     public event Action<PlayerColor> OnGameOver;
@@ -41,7 +63,27 @@ public class Game : MonoBehaviour
 
     void Start()
     {
-        InitializeBoard();
+        playerScores = new[] { 0, 0 };
+        LocalPlayerColor = (PhotonNetwork.LocalPlayer.ActorNumber == 1) ? PlayerColor.White : PlayerColor.Black;
+        waitingText = GameObject.FindGameObjectWithTag("WaitingText").GetComponent<TextMeshProUGUI>();
+        winnerText = GameObject.FindGameObjectWithTag("WinnerText").GetComponent<TextMeshProUGUI>();
+        restartText = GameObject.FindGameObjectWithTag("RestartText").GetComponent<TextMeshProUGUI>();
+        menuObjects = GameObject.FindGameObjectsWithTag("menu");
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            waitingText.enabled = true;
+        }
+    }
+
+    public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)
+    {
+        base.OnPlayerEnteredRoom(newPlayer);
+        if (PhotonNetwork.CurrentRoom.PlayerCount == 2 && PhotonNetwork.IsMasterClient)
+        {
+            waitingText.enabled = false;
+            InitializeBoard();
+        }
     }
 
     private void InitializeBoard()
@@ -81,15 +123,15 @@ public class Game : MonoBehaviour
 
     public GameObject CreateChessPiece(ChessPieceType type, int x, PlayerColor color)
     {
-        GameObject obj = Instantiate(ChessPiecePrefab, new Vector3(0, 0, -1), Quaternion.identity);
+        GameObject obj = PhotonNetwork.Instantiate(ChessPiecePrefab.name, new Vector3(0, 0, -1), Quaternion.identity);
         Chessman cm = obj.GetComponent<Chessman>();
         cm.name = $"{color.ToString().ToLower()}_{type.ToString().ToLower()}";
         cm.XBoard = x;
+        cm.YBoard = (type == ChessPieceType.Pawn) ? (color == PlayerColor.White ? 1 : 6) : (color == PlayerColor.White ? 0 : 7);
 
-        if (type == ChessPieceType.Pawn) cm.YBoard = color == PlayerColor.White ? 1 : 6;
-        else cm.YBoard = color == PlayerColor.White ? 0 : 7;
+        cm.SetCoords();
+        cm.Initialize(type, color);
 
-        cm.Activate();
         return obj;
     }
 
@@ -130,21 +172,72 @@ public class Game : MonoBehaviour
         return isGameOver;
     }
 
-    public void SetPromotionComplete(bool value)
+    [PunRPC]
+    private void ChangeTurn(PlayerColor newCurrentPlayer)
     {
-        isPromotionComplete = value;
-        if (value)
-        {
-            EndTurn();
-        }
+        currentPlayer = newCurrentPlayer;
+        OnTurnChanged?.Invoke(currentPlayer);
     }
-
-    public bool GetPromotionComplete() { return isPromotionComplete; }
 
     public void EndTurn()
     {
-        NextTurn();
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PlayerColor nextPlayer = (currentPlayer == PlayerColor.White) ? PlayerColor.Black : PlayerColor.White;
+            photonView.RPC("ChangeTurn", RpcTarget.All, nextPlayer);
+        }
         ResetLastMovedPawn();
+    }
+
+    public void Update()
+    {
+        if (isGameOver && Input.GetMouseButtonDown(0))
+        {
+            RestartGame();
+        }
+    }
+
+    private void RestartGame()
+    {
+        isGameOver = false;
+        StartCoroutine(LeaveRoomCoroutine());
+    }
+
+    public void Winner(PlayerColor winningPlayer)
+    {
+        isGameOver = true;
+        DisplayWinnerText(winningPlayer);
+        OnGameOver?.Invoke(winningPlayer);
+    }
+
+    public void QuitGame()
+    {
+        if (PhotonNetwork.IsMessageQueueRunning)
+        {
+            photonView.RPC("PlayerQuit", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
+        }
+        StartCoroutine(LeaveRoomCoroutine());
+    }
+
+    [PunRPC]
+    private void PlayerQuit(int playerActorNumber)
+    {
+        PlayerColor quittingPlayerColor = (playerActorNumber == 1) ? PlayerColor.White : PlayerColor.Black;
+        PlayerColor winningPlayerColor = (quittingPlayerColor == PlayerColor.White) ? PlayerColor.Black : PlayerColor.White;
+
+        if (PhotonNetwork.LocalPlayer.ActorNumber != playerActorNumber)
+        {
+            // 상대방이 나갔을 때 승리 처리
+            Winner(winningPlayerColor);
+        }
+    }
+
+    private IEnumerator LeaveRoomCoroutine()
+    {
+        PhotonNetwork.LeaveRoom();
+        while (PhotonNetwork.InRoom)
+            yield return null;
+        SceneManager.LoadScene("Lobby");
     }
 
     private void ResetLastMovedPawn()
@@ -163,37 +256,36 @@ public class Game : MonoBehaviour
         }
     }
 
-    public void NextTurn()
+    private void DisplayWinnerText(PlayerColor winningPlayer)
     {
-        currentPlayer = (currentPlayer == PlayerColor.White) ? PlayerColor.Black : PlayerColor.White;
-        OnTurnChanged?.Invoke(currentPlayer);
+        winnerText.enabled = true;
+        winnerText.text = $"{winningPlayer} is the winner!";
+        restartText.enabled = true;
     }
 
-    public void Update()
+    [PunRPC]
+    private void SetPromotionCompleteRPC(bool value)
     {
-        if (isGameOver && Input.GetMouseButtonDown(0))
+        _isPromotionComplete = value;
+        if (value)
         {
-            RestartGame();
+            EndTurn();
         }
     }
 
-    private void RestartGame()
+    public void OpenMenu()
     {
-        isGameOver = false;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        foreach (GameObject menuObject in menuObjects)
+        {
+            menuObject.SetActive(true);
+        }
     }
 
-    public void Winner(PlayerColor winningPlayer)
+    public void CloseMenu()
     {
-        isGameOver = true;
-        DisplayWinnerText(winningPlayer);
-        OnGameOver?.Invoke(winningPlayer);
-    }
-
-    private void DisplayWinnerText(PlayerColor winningPlayer)
-    {
-        GameObject.FindGameObjectWithTag("WinnerText").GetComponent<TextMeshProUGUI>().enabled = true;
-        GameObject.FindGameObjectWithTag("WinnerText").GetComponent<TextMeshProUGUI>().text = $"{winningPlayer} is the winner!";
-        GameObject.FindGameObjectWithTag("RestartText").GetComponent<TextMeshProUGUI>().enabled = true;
+        foreach(GameObject menuObject in menuObjects)
+        {
+            menuObject.SetActive(false);
+        }
     }
 }

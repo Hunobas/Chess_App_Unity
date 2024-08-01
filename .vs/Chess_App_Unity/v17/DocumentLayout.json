@@ -3,20 +3,36 @@
   "WorkspaceRootPath": "C:\\Users\\po127\\Chess_App_Unity\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{9A281541-C3B2-85BC-3A64-CD2D082A0E04}|Assembly-CSharp.csproj|C:\\Users\\po127\\Chess_App_Unity\\assets\\scripts\\promotion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9A281541-C3B2-85BC-3A64-CD2D082A0E04}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\promotion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9A281541-C3B2-85BC-3A64-CD2D082A0E04}|Assembly-CSharp.csproj|C:\\Users\\po127\\Chess_App_Unity\\assets\\scripts\\moveplate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9A281541-C3B2-85BC-3A64-CD2D082A0E04}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\moveplate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9A281541-C3B2-85BC-3A64-CD2D082A0E04}|Assembly-CSharp.csproj|c:\\users\\po127\\chess_app_unity\\assets\\scripts\\game.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9A281541-C3B2-85BC-3A64-CD2D082A0E04}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\game.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{9A281541-C3B2-85BC-3A64-CD2D082A0E04}|Assembly-CSharp.csproj|C:\\Users\\po127\\Chess_App_Unity\\assets\\scripts\\chessman.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{9A281541-C3B2-85BC-3A64-CD2D082A0E04}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\chessman.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9A281541-C3B2-85BC-3A64-CD2D082A0E04}|Assembly-CSharp.csproj|c:\\users\\po127\\chess_app_unity\\assets\\scripts\\game.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9A281541-C3B2-85BC-3A64-CD2D082A0E04}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\game.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{8B046BBA-E3B0-7737-85DE-240570CA31B2}|PhotonUnityNetworking.csproj|c:\\users\\po127\\chess_app_unity\\assets\\photon\\photonunitynetworking\\code\\photonnetworkpart.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B046BBA-E3B0-7737-85DE-240570CA31B2}|PhotonUnityNetworking.csproj|solutionrelative:assets\\photon\\photonunitynetworking\\code\\photonnetworkpart.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9A281541-C3B2-85BC-3A64-CD2D082A0E04}|Assembly-CSharp.csproj|C:\\Users\\po127\\Chess_App_Unity\\assets\\scripts\\moveplate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9A281541-C3B2-85BC-3A64-CD2D082A0E04}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\moveplate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9A281541-C3B2-85BC-3A64-CD2D082A0E04}|Assembly-CSharp.csproj|C:\\Users\\po127\\Chess_App_Unity\\assets\\scripts\\promotion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9A281541-C3B2-85BC-3A64-CD2D082A0E04}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\promotion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9A281541-C3B2-85BC-3A64-CD2D082A0E04}|Assembly-CSharp.csproj|C:\\Users\\po127\\Chess_App_Unity\\assets\\scripts\\authmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9A281541-C3B2-85BC-3A64-CD2D082A0E04}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\authmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9A281541-C3B2-85BC-3A64-CD2D082A0E04}|Assembly-CSharp.csproj|C:\\Users\\po127\\Chess_App_Unity\\assets\\scripts\\lobbymanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9A281541-C3B2-85BC-3A64-CD2D082A0E04}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\lobbymanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9A281541-C3B2-85BC-3A64-CD2D082A0E04}|Assembly-CSharp.csproj|C:\\Users\\po127\\Chess_App_Unity\\assets\\scripts\\playernametext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9A281541-C3B2-85BC-3A64-CD2D082A0E04}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\playernametext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,59 +42,106 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "Chessman.cs",
-              "DocumentMoniker": "C:\\Users\\po127\\Chess_App_Unity\\Assets\\Scripts\\Chessman.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Chessman.cs",
-              "ToolTip": "C:\\Users\\po127\\Chess_App_Unity\\Assets\\Scripts\\Chessman.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Chessman.cs",
-              "ViewState": "AQIAAO8AAAAAAAAAAAAYwAoBAAABAAAA",
+              "Title": "PhotonNetworkPart.cs",
+              "DocumentMoniker": "C:\\Users\\po127\\Chess_App_Unity\\Assets\\Photon\\PhotonUnityNetworking\\Code\\PhotonNetworkPart.cs",
+              "RelativeDocumentMoniker": "Assets\\Photon\\PhotonUnityNetworking\\Code\\PhotonNetworkPart.cs",
+              "ToolTip": "C:\\Users\\po127\\Chess_App_Unity\\Assets\\Photon\\PhotonUnityNetworking\\Code\\PhotonNetworkPart.cs",
+              "RelativeToolTip": "Assets\\Photon\\PhotonUnityNetworking\\Code\\PhotonNetworkPart.cs",
+              "ViewState": "AQIAAO0JAAAAAAAAAADwv/UJAAARAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-07-29T16:03:56.762Z",
-              "IsPinned": true,
+              "WhenOpened": "2024-08-01T16:12:18.575Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 7,
+              "Title": "PlayerNameText.cs",
+              "DocumentMoniker": "C:\\Users\\po127\\Chess_App_Unity\\Assets\\Scripts\\PlayerNameText.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\PlayerNameText.cs",
+              "ToolTip": "C:\\Users\\po127\\Chess_App_Unity\\Assets\\Scripts\\PlayerNameText.cs",
+              "RelativeToolTip": "Assets\\Scripts\\PlayerNameText.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAArAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-31T13:37:47.639Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "LobbyManager.cs",
+              "DocumentMoniker": "C:\\Users\\po127\\Chess_App_Unity\\Assets\\Scripts\\LobbyManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\LobbyManager.cs",
+              "ToolTip": "C:\\Users\\po127\\Chess_App_Unity\\Assets\\Scripts\\LobbyManager.cs",
+              "RelativeToolTip": "Assets\\Scripts\\LobbyManager.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAASAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-31T13:34:58.752Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "AuthManager.cs",
+              "DocumentMoniker": "C:\\Users\\po127\\Chess_App_Unity\\Assets\\Scripts\\AuthManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\AuthManager.cs",
+              "ToolTip": "C:\\Users\\po127\\Chess_App_Unity\\Assets\\Scripts\\AuthManager.cs",
+              "RelativeToolTip": "Assets\\Scripts\\AuthManager.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAGUAAAARAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-31T08:33:41.617Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "Promotion.cs",
               "DocumentMoniker": "C:\\Users\\po127\\Chess_App_Unity\\Assets\\Scripts\\Promotion.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Promotion.cs",
               "ToolTip": "C:\\Users\\po127\\Chess_App_Unity\\Assets\\Scripts\\Promotion.cs",
               "RelativeToolTip": "Assets\\Scripts\\Promotion.cs",
-              "ViewState": "AQIAACIAAAAAAAAAAAAUwDIAAABdAAAA",
+              "ViewState": "AQIAADEAAAAAAAAAAAAUwDkAAAAMAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-07-29T16:03:58.071Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-07-29T16:03:58.071Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "MovePlate.cs",
-              "DocumentMoniker": "C:\\Users\\po127\\Chess_App_Unity\\Assets\\Scripts\\MovePlate.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\MovePlate.cs",
-              "ToolTip": "C:\\Users\\po127\\Chess_App_Unity\\Assets\\Scripts\\MovePlate.cs",
-              "RelativeToolTip": "Assets\\Scripts\\MovePlate.cs",
-              "ViewState": "AQIAAIsAAAAAAAAAAAAUwKUAAAABAAAA",
+              "Title": "Chessman.cs",
+              "DocumentMoniker": "C:\\Users\\po127\\Chess_App_Unity\\Assets\\Scripts\\Chessman.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Chessman.cs",
+              "ToolTip": "C:\\Users\\po127\\Chess_App_Unity\\Assets\\Scripts\\Chessman.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Chessman.cs",
+              "ViewState": "AQIAACwAAAAAAAAAAAAmwCEAAAAMAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-07-29T16:03:57.478Z",
+              "WhenOpened": "2024-07-29T16:03:56.762Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "Game.cs",
               "DocumentMoniker": "C:\\Users\\po127\\Chess_App_Unity\\Assets\\Scripts\\Game.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Game.cs",
               "ToolTip": "C:\\Users\\po127\\Chess_App_Unity\\Assets\\Scripts\\Game.cs",
               "RelativeToolTip": "Assets\\Scripts\\Game.cs",
-              "ViewState": "AQIAAKwAAAAAAAAAAAAUwMYAAAABAAAA",
+              "ViewState": "AQIAAHoAAAAAAAAAAAAgwIMAAAAXAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-07-29T16:00:13.961Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MovePlate.cs",
+              "DocumentMoniker": "C:\\Users\\po127\\Chess_App_Unity\\Assets\\Scripts\\MovePlate.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\MovePlate.cs",
+              "ToolTip": "C:\\Users\\po127\\Chess_App_Unity\\Assets\\Scripts\\MovePlate.cs",
+              "RelativeToolTip": "Assets\\Scripts\\MovePlate.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAAhAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-29T16:03:57.478Z",
               "EditorCaption": ""
             }
           ]

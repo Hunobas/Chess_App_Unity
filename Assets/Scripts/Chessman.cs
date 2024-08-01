@@ -1,9 +1,14 @@
 // Chessman.cs:
 using UnityEngine;
+using Photon.Pun;
 
-public class Chessman : MonoBehaviour
+public class Chessman : MonoBehaviourPunCallbacks, IPunObservable
 {
+    [SerializeField]
+    private string chessPieceName;
+
     public GameObject MovePlatePrefab;
+    private PhotonView photonView;
 
     public int XBoard { get; set; } = -1;
     public int YBoard { get; set; } = -1;
@@ -17,18 +22,52 @@ public class Chessman : MonoBehaviour
     private const float OffsetX = -2.3f;
     private const float OffsetY = -2.3f;
 
-    public void Activate()
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        SetCoords();
+        if (stream.IsWriting)
+        {
+            stream.SendNext(chessPieceName);
+        }
+        else
+        {
+            chessPieceName = (string)stream.ReceiveNext();
+            SetSprite();
+        }
+    }
+
+    public void Awake()
+    {
+        photonView = GetComponent<PhotonView>();
+    }
+
+    public void Initialize(ChessPieceType type, PlayerColor color)
+    {
+        chessPieceName = $"{color.ToString().ToLower()}_{type.ToString().ToLower()}";
+        if (photonView.IsMine)
+        {
+            photonView.RPC("SyncChessPieceName", RpcTarget.AllBuffered, chessPieceName);
+        }
+    }
+
+    [PunRPC]
+    private void SyncChessPieceName(string newName)
+    {
+        chessPieceName = newName;
         SetSprite();
     }
 
-    private void SetSprite()
+    public void SetSprite()
     {
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
         string[] nameParts = name.Split('_');
-        player = nameParts[0] == "white" ? PlayerColor.White : PlayerColor.Black;
 
+        if (nameParts.Length < 2)
+        {
+            Debug.LogWarning($"Chess piece name not properly set: {name}");
+            return;
+        }
+
+        player = nameParts[0] == "white" ? PlayerColor.White : PlayerColor.Black;
         switch (nameParts[1])
         {
             case "queen": spriteRenderer.sprite = player == PlayerColor.White ? WhiteQueen : BlackQueen; break;
@@ -242,6 +281,8 @@ public class Chessman : MonoBehaviour
 
     public void MovePlateSpawn(int matrixX, int matrixY, bool isAttack = false, bool isCastling = false, bool isEnPassant = false)
     {
+        if (Game.Instance.LocalPlayerColor != player) return;
+
         float x = matrixX * ScaleFactor + OffsetX;
         float y = matrixY * ScaleFactor + OffsetY;
 
@@ -258,7 +299,7 @@ public class Chessman : MonoBehaviour
     private void OnMouseUp()
     {
         Game game = Game.Instance;
-        if (!game.IsGameOver() && game.GetCurrentPlayer() == player && game.GetPromotionComplete())
+        if (!game.IsGameOver() && game.GetCurrentPlayer() == player && game.IsPromotionComplete && game.LocalPlayerColor == player)
         {
             DestroyMovePlates();
             InitiateMovePlates();

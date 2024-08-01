@@ -1,12 +1,14 @@
 // MovePlate.cs:
 using UnityEngine;
 using System.Collections;
+using Photon.Pun;
 
-public class MovePlate : MonoBehaviour
+public class MovePlate : MonoBehaviourPunCallbacks
 {
     public GameObject PromotionPlatePrefab;
 
     private GameObject reference = null;
+    private PhotonView photonView;
     private int matrixX;
     private int matrixY;
 
@@ -28,105 +30,110 @@ public class MovePlate : MonoBehaviour
 
     private void OnMouseUp()
     {
+        if (!photonView.IsMine) return;
+        
         Game game = Game.Instance;
 
         // Perform the move
-        PerformMove();
+        photonView.RPC("PerformMoveRPC", RpcTarget.All, matrixX, matrixY, IsAttack, IsCastling, IsEnPassant);
 
         // Clean up and end turn
         reference.GetComponent<Chessman>().DestroyMovePlates();
-        if (game.GetPromotionComplete())
+    }
+
+    [PunRPC]
+    private void PerformMoveRPC(int targetX, int targetY, bool isAttack, bool isCastling, bool isEnPassant)
+    {
+        Game game = Game.Instance;
+
+        if (!isEnPassant && isAttack)
+        {
+            Capturepiece(game, targetX, targetY);
+        }
+
+        if (isCastling)
+        {
+            PerformCastling(game, targetX, targetY);
+        }
+
+        if (isEnPassant)
+        {
+            PerformEnPassant(game, targetX, targetY);
+        }
+
+        int initialY = reference.GetComponent<Chessman>().YBoard;
+
+        MovePiece(game, targetX, targetY);
+
+        if (reference.name.EndsWith("pawn"))
+        {
+            HandlePawnMove(game, initialY, targetX, targetY);
+        }
+
+        if (game.IsPromotionComplete)
         {
             game.EndTurn();
         }
     }
 
-    private void PerformMove()
+    private void Capturepiece(Game game, int x, int y)
     {
-        Game game = Game.Instance;
-
-        if (!IsEnPassant && IsAttack)
-        {
-            Capturepiece(game);
-        }
-
-        if (IsCastling)
-        {
-            PerformCastling(game);
-        }
-
-        if (IsEnPassant)
-        {
-            PerformEnPassant(game);
-        }
-
-        // save the initialY information for pawn moved last
-        int initialY = reference.GetComponent<Chessman>().YBoard;
-
-        // Move the piece
-        MovePiece(game);
-
-        if (reference.name.EndsWith("pawn"))
-        {
-            HandlePawnMove(game, initialY);
-        }
-    }
-
-    private void Capturepiece(Game game)
-    {
-        GameObject pieceToCapture = game.GetPosition(matrixX, matrixY);
+        GameObject pieceToCapture = game.GetPosition(x, y);
         if (pieceToCapture.name == "white_king") game.Winner(PlayerColor.Black);
         if (pieceToCapture.name == "black_king") game.Winner(PlayerColor.White);
-        Destroy(pieceToCapture);
+        PhotonNetwork.Destroy(pieceToCapture);
     }
 
-    private void PerformCastling(Game game)
+    private void PerformCastling(Game game, int targetX, int targetY)
     {
-        int direction = (matrixX > reference.GetComponent<Chessman>().XBoard) ? 1 : -1;
+        int direction = (targetX > reference.GetComponent<Chessman>().XBoard) ? 1 : -1;
         int rookX = (direction == 1) ? 7 : 0;
         int newRookX = (direction == 1) ? 5 : 3;
 
-        GameObject rook = game.GetPosition(rookX, matrixY);
-        game.SetPositionEmpty(rookX, matrixY);
-        rook.GetComponent<Chessman>().XBoard = newRookX;
-        rook.GetComponent<Chessman>().YBoard = matrixY;
-        rook.GetComponent<Chessman>().SetCoords();
-        rook.GetComponent<Chessman>().HasMoved = true;
+        GameObject rook = game.GetPosition(rookX, targetY);
+        Chessman rookComponent = rook.GetComponent<Chessman>();
+        game.SetPositionEmpty(rookX, targetY);
+        rookComponent.XBoard = newRookX;
+        rookComponent.YBoard = targetY;
+        rookComponent.SetCoords();
+        rookComponent.HasMoved = true;
         game.SetPosition(rook);
     }
 
-    private void PerformEnPassant(Game game)
+    private void PerformEnPassant(Game game, int targetX, int targetY)
     {
         int directionY = (game.GetCurrentPlayer() == PlayerColor.White) ? -1 : 1;
-        GameObject pawnToCapture = game.GetPosition(matrixX, matrixY + directionY);
+        GameObject pawnToCapture = game.GetPosition(targetX, targetY + directionY);
 
         if (pawnToCapture.name.EndsWith("pawn"))
         {
-            Destroy(pawnToCapture);
-            game.SetPositionEmpty(matrixX, matrixY + directionY);
+            PhotonNetwork.Destroy(pawnToCapture);
+            game.SetPositionEmpty(targetX, targetY + directionY);
         }
     }
 
-    private void MovePiece(Game game)
+    private void MovePiece(Game game, int targetX, int targetY)
     {
-        game.SetPositionEmpty(reference.GetComponent<Chessman>().XBoard,
-                              reference.GetComponent<Chessman>().YBoard);
-        reference.GetComponent<Chessman>().XBoard = matrixX;
-        reference.GetComponent<Chessman>().YBoard = matrixY;
-        reference.GetComponent<Chessman>().SetCoords();
+        Chessman cm = reference.GetComponent<Chessman>();
+        game.SetPositionEmpty(cm.XBoard, cm.YBoard);
+        cm.XBoard = targetX;
+        cm.YBoard = targetY;
+        cm.SetCoords();
         game.SetPosition(reference);
-
-        reference.GetComponent<Chessman>().HasMoved = true;
+        cm.HasMoved = true;
     }
 
-    private void HandlePawnMove(Game game, int initialY)
+    private void HandlePawnMove(Game game, int initialY, int targetX, int targetY)
     {
         game.SetLastMovedPawn(reference, initialY);
 
-        if ((game.GetCurrentPlayer() == PlayerColor.Black && matrixY == 0) || (game.GetCurrentPlayer() == PlayerColor.White && matrixY == 7))
+        if ((game.GetCurrentPlayer() == PlayerColor.Black && targetY == 0) || (game.GetCurrentPlayer() == PlayerColor.White && targetY == 7))
         {
-            game.SetPromotionComplete(false);
-            PromotionPlateSpawn(game.GetCurrentPlayer() == PlayerColor.White);
+            game.IsPromotionComplete = false;
+            if (photonView.IsMine)
+            {
+                PromotionPlateSpawn(game.GetCurrentPlayer() == PlayerColor.White);
+            }
         }
     }
 
@@ -157,6 +164,7 @@ public class MovePlate : MonoBehaviour
     public void SetReference(GameObject obj)
     {
         reference = obj;
+        photonView = obj.GetComponent<PhotonView>();
     }
 
     public GameObject GetReference()
