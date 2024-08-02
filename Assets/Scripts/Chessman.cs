@@ -2,12 +2,10 @@
 using UnityEngine;
 using Photon.Pun;
 
-public class Chessman : MonoBehaviourPunCallbacks, IPunObservable
+public class Chessman : MonoBehaviourPunCallbacks
 {
-    [SerializeField]
-    private string chessPieceName;
-
     public GameObject MovePlatePrefab;
+    public GameObject PromotionPlatePrefab;
     private PhotonView photonView;
 
     public int XBoard { get; set; } = -1;
@@ -22,38 +20,18 @@ public class Chessman : MonoBehaviourPunCallbacks, IPunObservable
     private const float OffsetX = -2.3f;
     private const float OffsetY = -2.3f;
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            stream.SendNext(chessPieceName);
-        }
-        else
-        {
-            chessPieceName = (string)stream.ReceiveNext();
-            SetSprite();
-        }
-    }
-
     public void Awake()
     {
         photonView = GetComponent<PhotonView>();
     }
 
-    public void Initialize(ChessPieceType type, PlayerColor color)
+    public void Initialize(ChessPieceType type, int x, PlayerColor color)
     {
-        chessPieceName = $"{color.ToString().ToLower()}_{type.ToString().ToLower()}";
-        if (photonView.IsMine)
-        {
-            photonView.RPC("SyncChessPieceName", RpcTarget.AllBuffered, chessPieceName);
-        }
-    }
-
-    [PunRPC]
-    private void SyncChessPieceName(string newName)
-    {
-        chessPieceName = newName;
+        name = $"{color.ToString().ToLower()}_{type.ToString().ToLower()}";
+        XBoard = x;
+        YBoard = (type == ChessPieceType.Pawn) ? (color == PlayerColor.White ? 1 : 6) : (color == PlayerColor.White ? 0 : 7);
         SetSprite();
+        SetCoords();
     }
 
     public void SetSprite()
@@ -93,6 +71,15 @@ public class Chessman : MonoBehaviourPunCallbacks, IPunObservable
         foreach (GameObject mp in movePlates)
         {
             Destroy(mp);
+        }
+    }
+
+    public void DestroyPromotionPlates()
+    {
+        GameObject[] promotionPlate = GameObject.FindGameObjectsWithTag("PromotionPlate");
+        foreach (GameObject pp in promotionPlate)
+        {
+            Destroy(pp);
         }
     }
 
@@ -292,7 +279,7 @@ public class Chessman : MonoBehaviourPunCallbacks, IPunObservable
         mpScript.IsAttack = isAttack;
         mpScript.IsCastling = isCastling;
         mpScript.IsEnPassant = isEnPassant;
-        mpScript.SetReference(gameObject);
+        mpScript.SetReference(gameObject, photonView);
         mpScript.SetCoords(matrixX, matrixY);
     }
 
@@ -303,6 +290,143 @@ public class Chessman : MonoBehaviourPunCallbacks, IPunObservable
         {
             DestroyMovePlates();
             InitiateMovePlates();
+        }
+    }
+
+    [PunRPC]
+    private void PerformMoveRPC(int targetX, int targetY, bool isAttack, bool isCastling, bool isEnPassant)
+    {
+        Debug.Log("#########PerformMoveRPC ½ÇÇàµÊ.");
+        Game game = Game.Instance;
+
+        if (!game.IsPositionOnBoard(targetX, targetY))
+        {
+            Debug.LogError($"Invalid move target: {targetX}, {targetY}");
+            return;
+        }
+
+        if (!isEnPassant && isAttack)
+        {
+            Capturepiece(game, targetX, targetY);
+        }
+
+        if (isCastling)
+        {
+            PerformCastling(game, targetX, targetY);
+        }
+
+        if (isEnPassant)
+        {
+            PerformEnPassant(game, targetX, targetY);
+        }
+
+        int initialY = YBoard;
+
+        MovePiece(game, targetX, targetY);
+
+        if (name.EndsWith("pawn"))
+        {
+            HandlePawnMove(game, initialY, targetX, targetY);
+        }
+
+        if (game.IsPromotionComplete)
+        {
+            game.EndTurn();
+        }
+    }
+
+    private void Capturepiece(Game game, int x, int y)
+    {
+        GameObject pieceToCapture = game.GetPosition(x, y);
+        if (pieceToCapture == null)
+        {
+            Debug.LogError("Chessman Error: pieceToCapture is null");
+            return;
+        }
+        if (pieceToCapture.name == "white_king") game.Winner(PlayerColor.Black);
+        if (pieceToCapture.name == "black_king") game.Winner(PlayerColor.White);
+        PhotonNetwork.Destroy(pieceToCapture);
+    }
+
+    private void PerformCastling(Game game, int targetX, int targetY)
+    {
+        int direction = (targetX > XBoard) ? 1 : -1;
+        int rookX = (direction == 1) ? 7 : 0;
+        int newRookX = (direction == 1) ? 5 : 3;
+
+        GameObject rook = game.GetPosition(rookX, targetY);
+        Chessman rookComponent = rook.GetComponent<Chessman>();
+        game.SetPositionEmpty(rookX, targetY);
+        rookComponent.XBoard = newRookX;
+        rookComponent.YBoard = targetY;
+        rookComponent.SetCoords();
+        rookComponent.HasMoved = true;
+        game.SetPosition(rook);
+    }
+
+    private void PerformEnPassant(Game game, int targetX, int targetY)
+    {
+        int directionY = (game.GetCurrentPlayer() == PlayerColor.White) ? -1 : 1;
+        GameObject pawnToCapture = game.GetPosition(targetX, targetY + directionY);
+
+        if (pawnToCapture.name.EndsWith("pawn"))
+        {
+            PhotonNetwork.Destroy(pawnToCapture);
+            game.SetPositionEmpty(targetX, targetY + directionY);
+        }
+    }
+
+    private void MovePiece(Game game, int targetX, int targetY)
+    {
+        game.SetPositionEmpty(XBoard, YBoard);
+        XBoard = targetX;
+        YBoard = targetY;
+        SetCoords();
+        game.SetPosition(gameObject);
+        HasMoved = true;
+    }
+
+    private void HandlePawnMove(Game game, int initialY, int targetX, int targetY)
+    {
+        game.SetLastMovedPawn(gameObject, initialY);
+
+        if ((game.GetCurrentPlayer() == PlayerColor.Black && targetY == 0) || (game.GetCurrentPlayer() == PlayerColor.White && targetY == 7))
+        {
+            game.IsPromotionComplete = false;
+            if (photonView.IsMine)
+            {
+                PromotionPlateSpawn(game.GetCurrentPlayer() == PlayerColor.White);
+            }
+        }
+    }
+
+    public void PromotionPlateSpawn(bool isWhite)
+    {
+        float offsetY = isWhite ? -0.8f : 0.8f;
+
+        float x = XBoard * ScaleFactor + OffsetX;
+        float y = YBoard * ScaleFactor + OffsetY + offsetY;
+
+        GameObject mp = Instantiate(PromotionPlatePrefab, new Vector3(x, y, -4.0f), Quaternion.identity);
+        foreach (Transform child in mp.transform)
+        {
+            Promotion promotionScript = child.GetComponent<Promotion>();
+            if (promotionScript != null)
+            {
+                promotionScript.SetPromotionPiece(gameObject, photonView);
+            }
+        }
+    }
+
+    [PunRPC]
+    private void PerformPromotionRPC(string newPieceName, Sprite newSprite)
+    {
+        name = newPieceName;
+        GetComponent<SpriteRenderer>().sprite = newSprite;
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Game.Instance.IsPromotionComplete = true;
         }
     }
 }

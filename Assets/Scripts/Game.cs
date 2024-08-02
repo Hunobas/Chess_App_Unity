@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using System;
 using Photon.Pun;
+using System.Drawing;
 
 public enum PlayerColor { White, Black }
 public enum ChessPieceType { Pawn, Rook, Knight, Bishop, Queen, King }
@@ -68,7 +69,7 @@ public class Game : MonoBehaviourPunCallbacks
         waitingText = GameObject.FindGameObjectWithTag("WaitingText").GetComponent<TextMeshProUGUI>();
         winnerText = GameObject.FindGameObjectWithTag("WinnerText").GetComponent<TextMeshProUGUI>();
         restartText = GameObject.FindGameObjectWithTag("RestartText").GetComponent<TextMeshProUGUI>();
-        menuObjects = GameObject.FindGameObjectsWithTag("menu");
+        menuObjects = GameObject.FindGameObjectsWithTag("Menu");
 
         if (PhotonNetwork.IsMasterClient)
         {
@@ -82,11 +83,12 @@ public class Game : MonoBehaviourPunCallbacks
         if (PhotonNetwork.CurrentRoom.PlayerCount == 2 && PhotonNetwork.IsMasterClient)
         {
             waitingText.enabled = false;
-            InitializeBoard();
+            photonView.RPC("InitializeBoardRPC", RpcTarget.All);
         }
     }
 
-    private void InitializeBoard()
+    [PunRPC]
+    private void InitializeBoardRPC()
     {
         playerWhite = CreateTeam(PlayerColor.White);
         playerBlack = CreateTeam(PlayerColor.Black);
@@ -125,12 +127,7 @@ public class Game : MonoBehaviourPunCallbacks
     {
         GameObject obj = PhotonNetwork.Instantiate(ChessPiecePrefab.name, new Vector3(0, 0, -1), Quaternion.identity);
         Chessman cm = obj.GetComponent<Chessman>();
-        cm.name = $"{color.ToString().ToLower()}_{type.ToString().ToLower()}";
-        cm.XBoard = x;
-        cm.YBoard = (type == ChessPieceType.Pawn) ? (color == PlayerColor.White ? 1 : 6) : (color == PlayerColor.White ? 0 : 7);
-
-        cm.SetCoords();
-        cm.Initialize(type, color);
+        cm.Initialize(type, x, color);
 
         return obj;
     }
@@ -149,7 +146,14 @@ public class Game : MonoBehaviourPunCallbacks
 
     public void SetPositionEmpty(int x, int y)
     {
-        positions[x, y] = null;
+        if (IsPositionOnBoard(x, y))
+        {
+            positions[x, y] = null;
+        }
+        else
+        {
+            Debug.LogWarning($"Attempted to set empty position outside board: {x}, {y}");
+        }
     }
 
     public GameObject GetPosition(int x, int y)
@@ -173,7 +177,7 @@ public class Game : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    private void ChangeTurn(PlayerColor newCurrentPlayer)
+    private void ChangeTurnRPC(PlayerColor newCurrentPlayer)
     {
         currentPlayer = newCurrentPlayer;
         OnTurnChanged?.Invoke(currentPlayer);
@@ -184,7 +188,7 @@ public class Game : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient)
         {
             PlayerColor nextPlayer = (currentPlayer == PlayerColor.White) ? PlayerColor.Black : PlayerColor.White;
-            photonView.RPC("ChangeTurn", RpcTarget.All, nextPlayer);
+            photonView.RPC("ChangeTurnRPC", RpcTarget.All, nextPlayer);
         }
         ResetLastMovedPawn();
     }
@@ -214,13 +218,13 @@ public class Game : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsMessageQueueRunning)
         {
-            photonView.RPC("PlayerQuit", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
+            photonView.RPC("PlayerQuitRPC", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
         }
         StartCoroutine(LeaveRoomCoroutine());
     }
 
     [PunRPC]
-    private void PlayerQuit(int playerActorNumber)
+    private void PlayerQuitRPC(int playerActorNumber)
     {
         PlayerColor quittingPlayerColor = (playerActorNumber == 1) ? PlayerColor.White : PlayerColor.Black;
         PlayerColor winningPlayerColor = (quittingPlayerColor == PlayerColor.White) ? PlayerColor.Black : PlayerColor.White;

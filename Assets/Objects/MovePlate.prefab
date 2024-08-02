@@ -98,7 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76c9b30e5a7444a46a02b3f1b07ea9f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PromotionPlatePrefab: {fileID: 1185407974408403054, guid: 16aa600ff6d56f24a832e8bfc4a4eb58, type: 3}
+  PromotionPlatePrefab: {fileID: 9066825696517431091, guid: 16aa600ff6d56f24a832e8bfc4a4eb58, type: 3}
 --- !u!61 &3728030088462059062
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -138,7 +138,7 @@ GameObject:
   - component: {fileID: 239191076}
   m_Layer: 5
   m_Name: Menu Panel
-  m_TagString: menu
+  m_TagString: Menu
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -750,7 +750,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 604aaf2c69c877c49b3858c652e7cf94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ChessPiecePrefab: {fileID: 2603938487450568462, guid: 63b8efee383372a4aa6c6e047666a0bc, type: 3}
+  ChessPiecePrefab: {fileID: 5198801875009065509, guid: 63b8efee383372a4aa6c6e047666a0bc, type: 3}
 --- !u!114 &730665578
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1744,7 +1744,7 @@ GameObject:
   - component: {fileID: 1995057862}
   m_Layer: 5
   m_Name: Menu Mask
-  m_TagString: menu
+  m_TagString: Menu
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

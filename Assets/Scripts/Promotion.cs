@@ -5,7 +5,7 @@ using Photon.Pun;
 
 public class Promotion : MonoBehaviourPunCallbacks
 {
-    public GameObject PromotionPiece { get; private set; }
+    public GameObject reference { get; private set; }
     private PhotonView photonView;
 
     public Sprite BlackQueen, BlackKnight, BlackBishop, BlackRook;
@@ -42,36 +42,21 @@ public class Promotion : MonoBehaviourPunCallbacks
         }
     }
 
-    public void SetPromotionPiece(GameObject piece)
+    public void SetPromotionPiece(GameObject piece, PhotonView pv)
     {
-        PromotionPiece = piece;
-        photonView = piece.GetComponent<PhotonView>();
+        reference = piece;
+        photonView = pv;
     }
 
     private void OnMouseUp()
     {
-        if (!photonView.IsMine) return;
-
-        photonView.RPC("PerformPromotion", RpcTarget.All, name);
-    }
-
-    [PunRPC]
-    private void PerformPromotion(string newPieceName)
-    {
-        PromotionPiece.name = newPieceName;
-        PromotionPiece.GetComponent<SpriteRenderer>().sprite = GetComponent<SpriteRenderer>().sprite;
-
-        if (PhotonNetwork.IsMasterClient)
+        if (photonView == null)
         {
-            Game.Instance.IsPromotionComplete = true;
+            Debug.LogError("Promotion Error: photonView is null");
+            return;
         }
 
-        StartCoroutine(DestroyParentNextFrame());
-    }
-
-    private IEnumerator DestroyParentNextFrame()
-    {
-        yield return null;
-        Destroy(transform.parent.gameObject);
+        photonView.RPC("PerformPromotionRPC", RpcTarget.All, name, GetComponent<SpriteRenderer>().sprite);
+        reference.GetComponent<Chessman>().DestroyPromotionPlates();
     }
 }
