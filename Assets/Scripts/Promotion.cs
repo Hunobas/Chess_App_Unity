@@ -56,7 +56,10 @@ public class Promotion : MonoBehaviourPunCallbacks
             return;
         }
 
-        photonView.RPC("PerformPromotionRPC", RpcTarget.All, name, GetComponent<SpriteRenderer>().sprite);
-        reference.GetComponent<Chessman>().DestroyPromotionPlates();
+        if (Game.Instance.LocalPlayerColor == Game.Instance.GetCurrentPlayer())
+        {
+            photonView.RPC("PerformPromotionRPC", RpcTarget.All, name);
+            reference.GetComponent<Chessman>().DestroyPromotionPlates();
+        }
     }
 }

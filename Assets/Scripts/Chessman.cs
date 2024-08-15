@@ -1,12 +1,25 @@
 // Chessman.cs:
 using UnityEngine;
 using Photon.Pun;
+using static UnityEngine.GraphicsBuffer;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Schema;
+using System;
+
+[Flags]
+public enum MoveType
+{
+    Normal = 1 << 0,
+    Attack = 1 << 1,
+    Castling = 1 << 2,
+    EnPassant = 1 << 3
+}
 
 public class Chessman : MonoBehaviourPunCallbacks
 {
     public GameObject MovePlatePrefab;
     public GameObject PromotionPlatePrefab;
-    private PhotonView photonView;
 
     public int XBoard { get; set; } = -1;
     public int YBoard { get; set; } = -1;
@@ -16,22 +29,34 @@ public class Chessman : MonoBehaviourPunCallbacks
     public Sprite BlackQueen, BlackKnight, BlackBishop, BlackKing, BlackRook, BlackPawn;
     public Sprite WhiteQueen, WhiteKnight, WhiteBishop, WhiteKing, WhiteRook, WhitePawn;
 
+    private List<Vector3Int> ValidMovePlates = null;
+
     private const float ScaleFactor = 0.66f;
     private const float OffsetX = -2.3f;
     private const float OffsetY = -2.3f;
 
-    public void Awake()
-    {
-        photonView = GetComponent<PhotonView>();
-    }
-
     public void Initialize(ChessPieceType type, int x, PlayerColor color)
     {
+        photonView.RPC("InitializeRPC", RpcTarget.All, type, x, color);
+    }
+
+    [PunRPC]
+    public void InitializeRPC(ChessPieceType type, int x, PlayerColor color)
+    {
+        ValidMovePlates = new List<Vector3Int>();
         name = $"{color.ToString().ToLower()}_{type.ToString().ToLower()}";
         XBoard = x;
         YBoard = (type == ChessPieceType.Pawn) ? (color == PlayerColor.White ? 1 : 6) : (color == PlayerColor.White ? 0 : 7);
         SetSprite();
         SetCoords();
+    }
+
+    private void DestroyPiece(GameObject pieceToCapture)
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.Destroy(pieceToCapture);
+        }
     }
 
     public void SetSprite()
@@ -67,6 +92,7 @@ public class Chessman : MonoBehaviourPunCallbacks
 
     public void DestroyMovePlates()
     {
+        ValidMovePlates.Clear();
         GameObject[] movePlates = GameObject.FindGameObjectsWithTag("MovePlate");
         foreach (GameObject mp in movePlates)
         {
@@ -151,12 +177,12 @@ public class Chessman : MonoBehaviourPunCallbacks
         // Kingside castling
         if (CanCastle(1, 3))
         {
-            MovePlateSpawn(XBoard + 2, YBoard, false, true);
+            ValidMovePlates.Add(new Vector3Int(XBoard + 2, YBoard, (int)(MoveType.Castling) ));
         }
         // Queenside castling
         if (CanCastle(-1, 4))
         {
-            MovePlateSpawn(XBoard - 2, YBoard, false, true);
+            ValidMovePlates.Add(new Vector3Int(XBoard - 2, YBoard, (int)(MoveType.Castling)));
         }
     }
 
@@ -187,11 +213,11 @@ public class Chessman : MonoBehaviourPunCallbacks
         {
             if (game.GetPosition(XBoard, YBoard + directionY) == null)
             {
-                MovePlateSpawn(XBoard, YBoard + directionY);
+                ValidMovePlates.Add(new Vector3Int(XBoard, YBoard + directionY, (int)(MoveType.Normal) ));
 
                 if (!HasMoved && game.GetPosition(XBoard, YBoard + directionY * 2) == null)
                 {
-                    MovePlateSpawn(XBoard, YBoard + directionY * 2);
+                    ValidMovePlates.Add(new Vector3Int(XBoard, YBoard + directionY * 2, (int)(MoveType.Normal) ));
                 }
             }
 
@@ -210,7 +236,7 @@ public class Chessman : MonoBehaviourPunCallbacks
                 GameObject piece = game.GetPosition(XBoard + directionX, YBoard + directionY);
                 if (piece != null && piece.GetComponent<Chessman>().player != player)
                 {
-                    MovePlateSpawn(XBoard + directionX, YBoard + directionY, true);
+                    ValidMovePlates.Add(new Vector3Int(XBoard + directionX, YBoard + directionY, (int)(MoveType.Attack) ));
                 }
             }
         }
@@ -225,7 +251,7 @@ public class Chessman : MonoBehaviourPunCallbacks
                 Mathf.Abs(lastMovedPawnScript.XBoard - XBoard) == 1 &&
                 lastMovedPawnScript.YBoard == YBoard)
             {
-                MovePlateSpawn(lastMovedPawnScript.XBoard, YBoard + directionY, true, false, true);
+                ValidMovePlates.Add(new Vector3Int(lastMovedPawnScript.XBoard, YBoard + directionY, (int)(MoveType.Attack | MoveType.EnPassant) ));
             }
         }
     }
@@ -238,14 +264,14 @@ public class Chessman : MonoBehaviourPunCallbacks
 
         while (game.IsPositionOnBoard(x, y) && game.GetPosition(x, y) == null)
         {
-            MovePlateSpawn(x, y);
+            ValidMovePlates.Add(new Vector3Int( x, y, (int)(MoveType.Normal) ));
             x += xIncrement;
             y += yIncrement;
         }
 
         if (game.IsPositionOnBoard(x, y) && game.GetPosition(x, y).GetComponent<Chessman>().player != player)
         {
-            MovePlateSpawn(x, y, true);
+            ValidMovePlates.Add(new Vector3Int( x, y, (int)(MoveType.Attack)));
         }
     }
 
@@ -257,30 +283,33 @@ public class Chessman : MonoBehaviourPunCallbacks
             GameObject piece = game.GetPosition(x, y);
             if (piece == null)
             {
-                MovePlateSpawn(x, y);
+                ValidMovePlates.Add(new Vector3Int( x, y, (int)(MoveType.Normal)));
             }
             else if (piece.GetComponent<Chessman>().player != player)
             {
-                MovePlateSpawn(x, y, true);
+                ValidMovePlates.Add(new Vector3Int( x, y, (int)(MoveType.Attack)));
             }
         }
     }
 
-    public void MovePlateSpawn(int matrixX, int matrixY, bool isAttack = false, bool isCastling = false, bool isEnPassant = false)
+    public void MovePlateSpawn()
     {
         if (Game.Instance.LocalPlayerColor != player) return;
 
-        float x = matrixX * ScaleFactor + OffsetX;
-        float y = matrixY * ScaleFactor + OffsetY;
+        foreach (Vector3Int ValidMovePlate in ValidMovePlates)
+        {
+            float x = ValidMovePlate.x * ScaleFactor + OffsetX;
+            float y = ValidMovePlate.y * ScaleFactor + OffsetY;
 
-        GameObject mp = Instantiate(MovePlatePrefab, new Vector3(x, y, -3.0f), Quaternion.identity);
+            GameObject mp = Instantiate(MovePlatePrefab, new Vector3(x, y, -3.0f), Quaternion.identity);
 
-        MovePlate mpScript = mp.GetComponent<MovePlate>();
-        mpScript.IsAttack = isAttack;
-        mpScript.IsCastling = isCastling;
-        mpScript.IsEnPassant = isEnPassant;
-        mpScript.SetReference(gameObject, photonView);
-        mpScript.SetCoords(matrixX, matrixY);
+            MovePlate mpScript = mp.GetComponent<MovePlate>();
+            mpScript.IsAttack = ((MoveType)ValidMovePlate.z).HasFlag(MoveType.Attack);
+            mpScript.IsCastling = ((MoveType)ValidMovePlate.z).HasFlag(MoveType.Castling);
+            mpScript.IsEnPassant = ((MoveType)ValidMovePlate.z).HasFlag(MoveType.EnPassant);
+            mpScript.SetReference(gameObject, photonView);
+            mpScript.SetCoords(ValidMovePlate.x, ValidMovePlate.y);
+        }
     }
 
     private void OnMouseUp()
@@ -289,14 +318,56 @@ public class Chessman : MonoBehaviourPunCallbacks
         if (!game.IsGameOver() && game.GetCurrentPlayer() == player && game.IsPromotionComplete && game.LocalPlayerColor == player)
         {
             DestroyMovePlates();
-            InitiateMovePlates();
+            if (PhotonNetwork.IsMasterClient)
+            {
+                InitiateMovePlates();
+                MovePlateSpawn();
+            }
+            else
+            {
+                photonView.RPC("RequestMovePlatesRPC", RpcTarget.MasterClient, photonView.ViewID);
+            }
         }
     }
 
     [PunRPC]
-    private void PerformMoveRPC(int targetX, int targetY, bool isAttack, bool isCastling, bool isEnPassant)
+    private void RequestMovePlatesRPC(int viewID)
     {
-        Debug.Log("#########PerformMoveRPC ½ÇÇàµÊ.");
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Chessman chessman = PhotonView.Find(viewID).GetComponent<Chessman>();
+            chessman.ValidMovePlates.Clear();
+            chessman.InitiateMovePlates();
+
+            int[] flattenedMoves = new int[chessman.ValidMovePlates.Count * 3];
+            for (int i = 0; i < chessman.ValidMovePlates.Count; i++)
+            {
+                flattenedMoves[i * 3] = chessman.ValidMovePlates[i].x;
+                flattenedMoves[i * 3 + 1] = chessman.ValidMovePlates[i].y;
+                flattenedMoves[i * 3 + 2] = chessman.ValidMovePlates[i].z;
+            }
+
+            photonView.RPC("ReceiveMovePlatesRPC", RpcTarget.All, viewID, flattenedMoves);
+        }
+    }
+
+    [PunRPC]
+    private void ReceiveMovePlatesRPC(int viewID, int[] flattenedMoves)
+    {
+        if (photonView.ViewID == viewID)
+        {
+            ValidMovePlates = new List<Vector3Int>();
+            for (int i = 0; i < flattenedMoves.Length; i += 3)
+            {
+                ValidMovePlates.Add(new Vector3Int(flattenedMoves[i], flattenedMoves[i + 1], flattenedMoves[i + 2]));
+            }
+            MovePlateSpawn();
+        }
+    }
+
+    [PunRPC]
+    public void PerformMoveRPC(int targetX, int targetY, bool isAttack, bool isCastling, bool isEnPassant)
+    {
         Game game = Game.Instance;
 
         if (!game.IsPositionOnBoard(targetX, targetY))
@@ -345,7 +416,8 @@ public class Chessman : MonoBehaviourPunCallbacks
         }
         if (pieceToCapture.name == "white_king") game.Winner(PlayerColor.Black);
         if (pieceToCapture.name == "black_king") game.Winner(PlayerColor.White);
-        PhotonNetwork.Destroy(pieceToCapture);
+
+        DestroyPiece(pieceToCapture);
     }
 
     private void PerformCastling(Game game, int targetX, int targetY)
@@ -371,7 +443,7 @@ public class Chessman : MonoBehaviourPunCallbacks
 
         if (pawnToCapture.name.EndsWith("pawn"))
         {
-            PhotonNetwork.Destroy(pawnToCapture);
+            DestroyPiece(pawnToCapture);
             game.SetPositionEmpty(targetX, targetY + directionY);
         }
     }
@@ -393,7 +465,7 @@ public class Chessman : MonoBehaviourPunCallbacks
         if ((game.GetCurrentPlayer() == PlayerColor.Black && targetY == 0) || (game.GetCurrentPlayer() == PlayerColor.White && targetY == 7))
         {
             game.IsPromotionComplete = false;
-            if (photonView.IsMine)
+            if (game.LocalPlayerColor == game.GetCurrentPlayer())
             {
                 PromotionPlateSpawn(game.GetCurrentPlayer() == PlayerColor.White);
             }
@@ -419,10 +491,10 @@ public class Chessman : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    private void PerformPromotionRPC(string newPieceName, Sprite newSprite)
+    public void PerformPromotionRPC(string newPieceName)
     {
         name = newPieceName;
-        GetComponent<SpriteRenderer>().sprite = newSprite;
+        SetSprite();
 
         if (PhotonNetwork.IsMasterClient)
         {

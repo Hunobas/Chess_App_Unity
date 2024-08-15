@@ -14,8 +14,6 @@ public class Game : MonoBehaviourPunCallbacks
 {
     public static Game Instance { get; private set; }
 
-    public bool IsMasterClientLocal => PhotonNetwork.IsMasterClient && photonView.IsMine;
-
     public GameObject ChessPiecePrefab;
     public GameObject LastMovedPawn { get; private set; }
     public int LastMovedPawnInitialY { get; private set; }
@@ -34,7 +32,7 @@ public class Game : MonoBehaviourPunCallbacks
         }
     }
     private const int BoardSize = 8;
-    private GameObject[,] positions = new GameObject[BoardSize, BoardSize];
+    public GameObject[,] positions = new GameObject[BoardSize, BoardSize];
     private GameObject[] playerBlack = new GameObject[16];
     private GameObject[] playerWhite = new GameObject[16];
     private int[] playerScores;
@@ -83,20 +81,19 @@ public class Game : MonoBehaviourPunCallbacks
         if (PhotonNetwork.CurrentRoom.PlayerCount == 2 && PhotonNetwork.IsMasterClient)
         {
             waitingText.enabled = false;
-            photonView.RPC("InitializeBoardRPC", RpcTarget.All);
+            InitializeBoard();
         }
     }
 
-    [PunRPC]
-    private void InitializeBoardRPC()
+    private void InitializeBoard()
     {
         playerWhite = CreateTeam(PlayerColor.White);
         playerBlack = CreateTeam(PlayerColor.Black);
 
         for (int i = 0; i < playerBlack.Length; i++)
         {
-            SetPosition(playerBlack[i]);
             SetPosition(playerWhite[i]);
+            SetPosition(playerBlack[i]);
         }
     }
 
@@ -177,7 +174,7 @@ public class Game : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    private void ChangeTurnRPC(PlayerColor newCurrentPlayer)
+    public void ChangeTurnRPC(PlayerColor newCurrentPlayer)
     {
         currentPlayer = newCurrentPlayer;
         OnTurnChanged?.Invoke(currentPlayer);
@@ -224,7 +221,7 @@ public class Game : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    private void PlayerQuitRPC(int playerActorNumber)
+    public void PlayerQuitRPC(int playerActorNumber)
     {
         PlayerColor quittingPlayerColor = (playerActorNumber == 1) ? PlayerColor.White : PlayerColor.Black;
         PlayerColor winningPlayerColor = (quittingPlayerColor == PlayerColor.White) ? PlayerColor.Black : PlayerColor.White;
@@ -268,7 +265,7 @@ public class Game : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    private void SetPromotionCompleteRPC(bool value)
+    public void SetPromotionCompleteRPC(bool value)
     {
         _isPromotionComplete = value;
         if (value)
